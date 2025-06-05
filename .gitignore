@@ -3,7 +3,6 @@ app_be/vendor
 **app_fe/.next/
 **app_fe/node_modules
 app_fe/.pnp
-*.json
 .pnp.*
 .yarn/*
 !.yarn/patches
