@@ -11,7 +11,8 @@ export default function ContactForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
-  const SITE_KEY = '6LdEb1YrAAAAABlJDO5_EhbFrdJ3UDKT5xiwfbao';
+  //const SITE_KEY = '6LdEb1YrAAAAABlJDO5_EhbFrdJ3UDKT5xiwfbao';
+  const SITE_KEY = '6LfccVcrAAAAAIMP2iIK3uYkX8j8h5yn1kYNczlV';
 
   useEffect(() => {
     // Load reCAPTCHA script
