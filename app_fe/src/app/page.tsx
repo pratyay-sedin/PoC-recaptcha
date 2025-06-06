@@ -11,7 +11,6 @@ export default function ContactForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
-  //const SITE_KEY = '6LdEb1YrAAAAABlJDO5_EhbFrdJ3UDKT5xiwfbao';
   const SITE_KEY = '6LfccVcrAAAAAIMP2iIK3uYkX8j8h5yn1kYNczlV';
 
   useEffect(() => {
@@ -73,11 +72,11 @@ export default function ContactForm() {
     formDataToSend.append('name', formData.name);
     formDataToSend.append('email', formData.email);
     formDataToSend.append('company', formData.company);
-    console.log(recaptchaToken)
+    console.log(recaptchaToken);
     formDataToSend.append('g-recaptcha-response', recaptchaToken);
 
     try {
-      const response = await fetch('http://127.0.0.1:8080/api/submit', {
+      const response = await fetch('https://eager-sensibly-raven.ngrok-free.app/api/submit', {
         method: 'POST',
         body: formDataToSend,
       });
@@ -150,11 +149,10 @@ export default function ContactForm() {
             </div>
           )}
 
-     <form
-  onSubmit={handleSubmit}
-  className={isLoading ? 'opacity-70 pointer-events-none' : ''}
->
-
+          <form
+            onSubmit={handleSubmit}
+            className={isLoading ? 'opacity-70 pointer-events-none' : ''}
+          >
             <div className='mb-6'>
               <label
                 htmlFor='name'
@@ -172,7 +170,6 @@ export default function ContactForm() {
                 className='w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-lg text-gray-900'
               />
             </div>
-
             <div className='mb-6'>
               <label
                 htmlFor='email'
@@ -190,7 +187,6 @@ export default function ContactForm() {
                 className='w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-lg text-gray-900'
               />
             </div>
-
             <div className='mb-6'>
               <label
                 htmlFor='company'
@@ -208,14 +204,14 @@ export default function ContactForm() {
                 className='w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-lg text-gray-900'
               />
             </div>
-
             <button
               type='submit'
               disabled={isLoading || !recaptchaLoaded}
               className='w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-lg'
             >
               {isLoading ? 'Processing...' : 'Send Message'}
-            </button>ß
+            </button>
+            ß
           </form>
         </div>
       </div>

@@ -2,9 +2,9 @@ package main
 
 import (
 	"app_be/configuration"
-	"app_be/util"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -13,41 +13,40 @@ import (
 func verifyRecaptcha(token string) bool {
 	conf := &configuration.Config{}
 	conf.LoadConfig()
-
-	fmt.Println(conf.SecretKey)
-	fmt.Println(token)
 	resp, err := http.PostForm(conf.RecaptcaptchaVerificationURL,
 		url.Values{
 			"secret":   {conf.SecretKey},
 			"response": {token},
 		})
 	if err != nil {
-		println("HTTP error verifying reCAPTCHA:", err.Error())
+		fmt.Println("HTTP error verifying reCAPTCHA:", err.Error())
 		return false
 	}
-	util.LogCaptchaResponse(resp)
 	defer resp.Body.Close()
 
 	var result map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		println("Error decoding JSON:", err.Error())
-		return false
+	if bodyBytes, err := io.ReadAll(resp.Body); err == nil {
+		if err := json.Unmarshal(bodyBytes, &result); err != nil {
+			fmt.Println("Error decoding JSON: ", err)
+		}
+	} else {
+		fmt.Printf("Error reading response body: %s", err.Error())
 	}
 	println("reCAPTCHA response JSON:")
 	for k, v := range result {
-		println(k, "=", v)
+		fmt.Println(k, "=", v)
 	}
 
 	success, ok := result["success"].(bool)
 	if !ok || !success {
-		println("reCAPTCHA verification failed:", result)
+		fmt.Println("reCAPTCHA verification failed:", result)
 		return false
 	}
 	return true
 }
 
 func handleFormSubmission(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 

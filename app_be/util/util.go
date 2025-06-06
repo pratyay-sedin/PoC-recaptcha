@@ -3,23 +3,18 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
-
-type CaptchaResponse struct {
-	Success     bool     `json:"success"`
-	Score       float64  `json:"score,omitempty"`
-	Action      string   `json:"action,omitempty"`
-	ChallengeTS string   `json:"challenge_ts,omitempty"`
-	Hostname    string   `json:"hostname,omitempty"`
-	ErrorCodes  []string `json:"error-codes,omitempty"`
-}
-
 func LogCaptchaResponse(response *http.Response) {
-	var result CaptchaResponse
-	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
-		fmt.Println("Error decoding JSON:", err)
+	var result map[string]interface{}
+	if bodyBytes, err := io.ReadAll(response.Body); err == nil {
+		if err := json.Unmarshal(bodyBytes, &result); err != nil {
+			fmt.Println("Error decoding JSON: ", err)
+		}
+		fmt.Printf("decoded response: %+v\n", result)
+	} else {
+		fmt.Printf("Error reading response body: %s", err.Error())
 	}
-	fmt.Printf("Recaptcha verification result: %+v\n", result)
 }
