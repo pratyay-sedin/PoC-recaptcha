@@ -2,6 +2,7 @@ package main
 
 import (
 	"app_be/configuration"
+	"app_be/util"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -24,6 +25,7 @@ func verifyRecaptcha(token string) bool {
 		println("HTTP error verifying reCAPTCHA:", err.Error())
 		return false
 	}
+	util.LogCaptchaResponse(resp)
 	defer resp.Body.Close()
 
 	var result map[string]interface{}
