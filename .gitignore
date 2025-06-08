@@ -1,5 +1,6 @@
 
 app_be/vendor
+app_be/go.sum
 **app_fe/.next/
 **automation-playwright/node_modules
 **app_fe/node_modules

@@ -1,6 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import * as dotenv from 'dotenv'
+
+dotenv.config(); 
+
+const SITE_URL = process.env.SITE_API || 'http://localhost:3000/api/submit';
+const SITE_KEY = process.env.SITE_KEY || '6LfDulkrAAAAAPrqxRTgogScMaM01i92X-rPzk-2'
+console.log(SITE_KEY)
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -11,7 +18,7 @@ export default function ContactForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
-  const SITE_KEY = '6LfccVcrAAAAAIMP2iIK3uYkX8j8h5yn1kYNczlV';
+
 
   useEffect(() => {
     // Load reCAPTCHA script
@@ -75,8 +82,9 @@ export default function ContactForm() {
     console.log(recaptchaToken);
     formDataToSend.append('g-recaptcha-response', recaptchaToken);
 
+
     try {
-      const response = await fetch('https://eager-sensibly-raven.ngrok-free.app/api/submit', {
+      const response = await fetch(SITE_URL, {
         method: 'POST',
         body: formDataToSend,
       });
