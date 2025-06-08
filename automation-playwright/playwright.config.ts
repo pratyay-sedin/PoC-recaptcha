@@ -4,8 +4,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const LOCAL_SITE_URL = 'http://localhost:3000'
-const SITE_URL = process.env.SITE_URL || LOCAL_SITE_URL;
+const SITE_URL = process.env.SITE_URL || 'https://amused-mallard-typically.ngrok-free.app';
 
 export default defineConfig({
   use: {

@@ -12,7 +12,6 @@ import (
 func main() {
 	conf := &configuration.Config{}
 	conf.LoadConfig()
-
 	r := gin.Default()
 
 	r.OPTIONS("/api/submit", func(c *gin.Context) {
