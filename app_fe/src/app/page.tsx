@@ -7,7 +7,7 @@ dotenv.config();
 
 const SITE_URL = process.env.SITE_API || 'http://localhost:3000/api/trial';
 const SITE_KEY =
-  process.env.SITE_KEY || '6LfpvV0rAAAAAFasjD0dCVq9HASA9fRZJAuL6N5j';
+  process.env.SITE_KEY || '';
 console.log(SITE_KEY);
 
 export default function ContactForm() {
