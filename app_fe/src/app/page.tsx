@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import * as dotenv from 'dotenv'
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const SITE_URL = process.env.SITE_API || 'http://localhost:3000/api/leads';
-const SITE_KEY = process.env.SITE_KEY || ''
-console.log(SITE_KEY)
+const SITE_URL = process.env.SITE_API || 'http://localhost:3000/api/trial';
+const SITE_KEY =
+  process.env.SITE_KEY || '6LfpvV0rAAAAAFasjD0dCVq9HASA9fRZJAuL6N5j';
+console.log(SITE_KEY);
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -18,7 +19,6 @@ export default function ContactForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
-
 
   useEffect(() => {
     // Load reCAPTCHA script
@@ -75,18 +75,20 @@ export default function ContactForm() {
   };
 
   const submitFormToServer = async (recaptchaToken) => {
-    const formDataToSend = new FormData();
-    formDataToSend.append('Name', formData.name);
-    formDataToSend.append('Business email', formData.email);
-    formDataToSend.append('Company name', formData.company);
-    console.log(recaptchaToken);
-    formDataToSend.append('g-recaptcha-response', recaptchaToken);
-
+    const jsonPayload = {
+      'Name': formData.name,
+      'Business email': formData.email,
+      'Company name': formData.company,
+      'recaptcha_token': recaptchaToken,
+    };
 
     try {
       const response = await fetch(SITE_URL, {
         method: 'POST',
-        body: formDataToSend,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
       });
 
       if (response.ok) {
