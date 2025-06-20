@@ -5,18 +5,18 @@
 Running the test
 
 ```bash
-npm playwright test
+npx playwright test
 ```
 
 To run the test in debug mode
 
 ```bash
-npm playwright test --debug
+npx playwright test --debug
 ```
 
 
 By default the test the headless mode is set to off but use this command to override it
 
 ```bash
-npm playwright test --headless
+npx playwright test --headless
 ```
