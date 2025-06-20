@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import * as dotenv from 'dotenv'
 
-dotenv.config(); 
+dotenv.config();
 
-const SITE_URL = process.env.SITE_API || 'http://localhost:3000/api/submit';
-const SITE_KEY = process.env.SITE_KEY || '6LfDulkrAAAAAPrqxRTgogScMaM01i92X-rPzk-2'
+const SITE_URL = process.env.SITE_API || 'http://localhost:3000/api/leads';
+const SITE_KEY = process.env.SITE_KEY || ''
 console.log(SITE_KEY)
 
 export default function ContactForm() {
@@ -76,9 +76,9 @@ export default function ContactForm() {
 
   const submitFormToServer = async (recaptchaToken) => {
     const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('company', formData.company);
+    formDataToSend.append('Name', formData.name);
+    formDataToSend.append('Business email', formData.email);
+    formDataToSend.append('Company name', formData.company);
     console.log(recaptchaToken);
     formDataToSend.append('g-recaptcha-response', recaptchaToken);
 

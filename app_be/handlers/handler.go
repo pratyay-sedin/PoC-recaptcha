@@ -46,6 +46,11 @@ func verifyRecaptcha(token string, conf *configuration.Config) bool {
 		return false
 	}
 
+	score := result["score"]
+	if score == "0.9" || score == "1.0" {
+		fmt.Println("reCAPTCHA verification failed:", result)
+	}
+
 	return true
 }
 
