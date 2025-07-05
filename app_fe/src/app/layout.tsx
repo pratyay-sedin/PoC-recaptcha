@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "reCAPTCHA PoC app",
+  title: "PoC app",
   description: "",
 };
 

@@ -5,10 +5,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const SITE_URL = process.env.SITE_API || 'http://localhost:3000/api/trial';
-const SITE_KEY =
-  process.env.SITE_KEY || '';
-console.log(SITE_KEY);
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_API || '';
+const SITE_KEY = process.env.NEXT_PUBLIC_SITE_KEY || '';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -21,7 +19,6 @@ export default function ContactForm() {
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
 
   useEffect(() => {
-    // Load reCAPTCHA script
     const loadRecaptcha = () => {
       if (window.grecaptcha) {
         setRecaptchaLoaded(true);
@@ -34,14 +31,8 @@ export default function ContactForm() {
       script.defer = true;
       script.onload = () => {
         window.grecaptcha.ready(() => {
-          console.log('reCAPTCHA v3 is ready');
           setRecaptchaLoaded(true);
-          // Execute on page load for initial assessment
-          window.grecaptcha
-            .execute(SITE_KEY, { action: 'page_load' })
-            .then((token) => {
-              console.log('Page load reCAPTCHA token generated');
-            });
+          window.grecaptcha.execute(SITE_KEY, { action: 'page_load' }).then(() => {});
         });
       };
       document.head.appendChild(script);
@@ -52,10 +43,7 @@ export default function ContactForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const executeRecaptcha = () => {
@@ -64,18 +52,14 @@ export default function ContactForm() {
         reject(new Error('reCAPTCHA not loaded'));
         return;
       }
-
       window.grecaptcha.ready(() => {
-        window.grecaptcha
-          .execute(SITE_KEY, { action: 'contact_form' })
-          .then(resolve)
-          .catch(reject);
+        window.grecaptcha.execute(SITE_KEY, { action: 'contact_form' }).then(resolve).catch(reject);
       });
     });
   };
 
   const submitFormToServer = async (recaptchaToken) => {
-    const jsonPayload = {
+    const payload = {
       'Name': formData.name,
       'Business email': formData.email,
       'Company name': formData.company,
@@ -85,38 +69,25 @@ export default function ContactForm() {
     try {
       const response = await fetch(SITE_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonPayload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         const data = await response.text();
         console.log('Server response:', data);
-        setMessage({
-          type: 'success',
-          text: 'Form submitted successfully! reCAPTCHA verification passed.',
-        });
+        setMessage({ type: 'success', text: 'Thanks! Your message has been sent.' });
         setFormData({ name: '', email: '', company: '' });
       } else {
-        throw new Error(
-          `Server error: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
       }
     } catch (error) {
-      console.error('Submission error:', error);
-      if (error.message.includes('403')) {
-        setMessage({
-          type: 'error',
-          text: 'reCAPTCHA verification failed. Please try again.',
-        });
-      } else {
-        setMessage({
-          type: 'error',
-          text: `Form submission failed: ${error.message}`,
-        });
-      }
+      setMessage({
+        type: 'error',
+        text: error.message.includes('403')
+          ? 'reCAPTCHA verification failed. Try again.'
+          : `Submission failed: ${error.message}`,
+      });
     }
   };
 
@@ -129,101 +100,88 @@ export default function ContactForm() {
       const recaptchaToken = await executeRecaptcha();
       await submitFormToServer(recaptchaToken);
     } catch (error) {
-      console.error('reCAPTCHA error:', error);
-      setMessage({
-        type: 'error',
-        text: 'reCAPTCHA verification failed. Please try again.',
-      });
+      setMessage({ type: 'error', text: 'reCAPTCHA verification failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className='min-h-screen bg-gray-100 py-12 px-4'>
-      <div className='max-w-2xl mx-auto'>
-        <div className='bg-white rounded-lg shadow-lg p-8'>
-          <h2 className='text-3xl font-bold text-center text-gray-800 mb-8'>
-            Enquiry Form
-          </h2>
-          {/* Success/Error Messages */}
-          {message.text && (
-            <div
-              className={`p-4 rounded-lg mb-6 border-l-4 ${
-                message.type === 'success'
-                  ? 'bg-green-50 border-green-400 text-green-700'
-                  : 'bg-red-50 border-red-400 text-red-700'
-              }`}
-            >
-              {message.text}
-            </div>
-          )}
+    <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-xl mx-auto bg-white p-10 rounded-2xl shadow-xl">
+        <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-8">
+          Get in Touch
+        </h2>
 
-          <form
-            onSubmit={handleSubmit}
-            className={isLoading ? 'opacity-70 pointer-events-none' : ''}
+        {message.text && (
+          <div
+            className={`mb-6 px-4 py-3 rounded-lg border-l-4 ${
+              message.type === 'success'
+                ? 'bg-green-50 border-green-500 text-green-700'
+                : 'bg-red-50 border-red-500 text-red-700'
+            }`}
           >
-            <div className='mb-6'>
-              <label
-                htmlFor='name'
-                className='block text-sm font-medium text-gray-700 mb-2'
-              >
-                Name:
-              </label>
-              <input
-                type='text'
-                id='name'
-                name='name'
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className='w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-lg text-gray-900'
-              />
-            </div>
-            <div className='mb-6'>
-              <label
-                htmlFor='email'
-                className='block text-sm font-medium text-gray-700 mb-2'
-              >
-                Email:
-              </label>
-              <input
-                type='email'
-                id='email'
-                name='email'
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                className='w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-lg text-gray-900'
-              />
-            </div>
-            <div className='mb-6'>
-              <label
-                htmlFor='company'
-                className='block text-sm font-medium text-gray-700 mb-2'
-              >
-                Company:
-              </label>
-              <input
-                type='text'
-                id='company'
-                name='company'
-                value={formData.company}
-                onChange={handleInputChange}
-                required
-                className='w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-lg text-gray-900'
-              />
-            </div>
-            <button
-              type='submit'
-              disabled={isLoading || !recaptchaLoaded}
-              className='w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-lg'
-            >
-              {isLoading ? 'Processing...' : 'Send Message'}
-            </button>
-            ß
-          </form>
-        </div>
+            {message.text}
+          </div>
+        )}
+
+        <form
+          onSubmit={handleSubmit}
+          className={`${isLoading ? 'opacity-70 pointer-events-none' : ''} space-y-6`}
+        >
+          <div>
+            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              required
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              required
+              value={formData.email}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="company" className="block text-sm font-semibold text-gray-700 mb-1">
+              Company Name
+            </label>
+            <input
+              type="text"
+              name="company"
+              id="company"
+              required
+              value={formData.company}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading || !recaptchaLoaded}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition-colors duration-200 text-lg"
+          >
+            {isLoading ? 'Sending...' : 'Submit'}
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -56,21 +56,29 @@ func verifyRecaptcha(token string, conf *configuration.Config) bool {
 
 func HandleFormSubmission(conf *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+		c = setHeaders(c)
 		if err := c.Request.ParseMultipartForm(10 << 20); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Could not parse form"})
 			return
 		}
-
 		recaptchaToken := c.PostForm("g-recaptcha-response")
 		if !verifyRecaptcha(recaptchaToken, conf) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "reCAPTCHA failed"})
 			return
 		}
-
 		c.JSON(http.StatusOK, gin.H{"message": "Verified! Form received"})
 	}
+}
+
+func HandleLogin() gin.HandlerFunc {
+	return func(c *gin.Content) {
+		c = setHeaders(c)
+	}
+}
+
+func setHeaders(c *gin.Context) *gin.Context {
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	return c
 }
