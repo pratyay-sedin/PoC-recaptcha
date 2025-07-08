@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_API || 'http://localhost:3001/api/trial';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_API || '';
 // const SITE_URL = process.env.SITE_API || 'https://eager-sensibly-raven.ngrok-free.app/api/trial';
 const SITE_KEY =
   process.env.NEXT_PUBLIC_SITE_KEY || '';
